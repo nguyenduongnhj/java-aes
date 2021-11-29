@@ -1,12 +1,14 @@
 package main;
 
+import java.nio.charset.StandardCharsets;
+
 public class main {
     public static void main(String[] args) {
         AESEngine engine = new AESEngine();
         PKCS7Padding padding = new PKCS7Padding();
 
         byte[] key =  new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-        byte[] dat =  new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 17};
+        byte[] dat =  "pham hieu dep trai vo dich".getBytes(StandardCharsets.UTF_8);
         int length = engine.getBlockSize() - (dat.length % engine.getBlockSize());
         int dataSize = length + dat.length;
         engine.init(true,key);
@@ -31,16 +33,16 @@ public class main {
 
         //ket thuc ma hoa
         long durationEncTime = System.nanoTime() - startTime;
-        System.out.println("duration encrypt: " + durationEncTime +" nano second");
+        System.out.println("[-] Duration encrypt: " + durationEncTime +" nano second");
 
-
+        System.out.print("[.] Padding data : 0x");
         for (int i = 0 ;i < paddingData.length ;i ++) {
-            System.out.format("0x%02x ",paddingData[i]);
+            System.out.format("%02x",paddingData[i]);
         }
 
-        System.out.println("\n======\n");
+        System.out.print("\n[.] Encrypt data output: 0x");
         for (int i = 0 ;i < out.length ;i ++) {
-            System.out.format("0x%02x ",out[i]);
+            System.out.format("%02x",out[i]);
         }
 
 
@@ -63,16 +65,18 @@ public class main {
         System.arraycopy(decrypt, 0, decryptResult, 0, decryptResult.length);
 
         long durationDecTime = System.nanoTime() - startTime;
-        System.out.println("\nduration decrypt: " + durationDecTime +" nano second");
+        System.out.print("\n[-] Duration decrypt: " + durationDecTime +" nano second");
 
 
-        System.out.println("\n======\n");
+        System.out.print("\n[.] Decrypt data output: 0x");
         for (int i = 0 ;i < decryptResult.length ;i ++) {
-            System.out.format("0x%02x ",decryptResult[i]);
+            System.out.format("%02x",decryptResult[i]);
         }
 
-
+        System.out.println("\n[.] String result: " +new String(decryptResult));
 
     }
+
+
 
 }
