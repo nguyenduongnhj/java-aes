@@ -1,7 +1,6 @@
 package main;
 
-public class CBCBlockCipher
-{
+public class CBCBlockCipher implements BlockCipher {
     private byte[]          IV;
     private byte[]          cbcV;
     private byte[]          cbcNextV;
@@ -10,8 +9,7 @@ public class CBCBlockCipher
     private AESEngine        cipher = null;
     private boolean         encrypting;
 
-    public CBCBlockCipher( AESEngine cipher)
-    {
+    public CBCBlockCipher( AESEngine cipher) {
         this.cipher = cipher;
         this.blockSize = cipher.getBlockSize();
         this.IV = new byte[blockSize];
@@ -19,29 +17,32 @@ public class CBCBlockCipher
         this.cbcNextV = new byte[blockSize];
     }
 
-    public void init( boolean encrypting, byte[] iv) throws IllegalArgumentException {
+    @Override
+    public void init(boolean forEncryption, byte[] iv, byte[] key) throws IllegalArgumentException {
         boolean oldEncrypting = this.encrypting;
 
-        this.encrypting = encrypting;
+        this.encrypting = forEncryption;
         if (iv.length != blockSize)
         {
             throw new IllegalArgumentException("initialisation vector must be the same length as block size");
         }
-
+        cipher.init(forEncryption, key);
         System.arraycopy(iv, 0, IV, 0, iv.length);
-
         reset();
     }
 
 
-    public int processBlock(
-            byte[]      in,
-            int         inOff,
-            byte[]      out,
-            int         outOff)
+    public int processBlock(byte[] in, int inOff,
+                            byte[]      out,
+                            int         outOff)
             throws DataLengthException, IllegalStateException
     {
         return (encrypting) ? encryptBlock(in, inOff, out, outOff) : decryptBlock(in, inOff, out, outOff);
+    }
+
+    @Override
+    public int getBlockSize() {
+        return this.cipher.getBlockSize();
     }
 
     public void reset()

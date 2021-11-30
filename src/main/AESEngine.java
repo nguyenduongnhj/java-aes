@@ -1,7 +1,6 @@
 package main;
 
-public class AESEngine
-{
+public class AESEngine implements BlockCipher{
     // The S box
     private static final byte[] S = {
             (byte)99, (byte)124, (byte)119, (byte)123, (byte)242, (byte)107, (byte)111, (byte)197,
@@ -424,6 +423,11 @@ public class AESEngine
     public int getBlockSize()
     {
         return BLOCK_SIZE;
+    }
+
+    @Override
+    public void init(boolean forEncryption, byte[] iv, byte[] key) throws IllegalArgumentException {
+        this.init(forEncryption, key);
     }
 
     public int processBlock(byte[] in, int inOff, byte[] out, int outOff)
