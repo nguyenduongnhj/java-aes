@@ -32,11 +32,7 @@ public class CBCBlockCipher implements BlockCipher {
     }
 
 
-    public int processBlock(byte[] in, int inOff,
-                            byte[]      out,
-                            int         outOff)
-            throws DataLengthException, IllegalStateException
-    {
+    public int processBlock(byte[] in, int inOff, byte[] out, int outOff) throws DataLengthException, IllegalStateException {
         return (encrypting) ? encryptBlock(in, inOff, out, outOff) : decryptBlock(in, inOff, out, outOff);
     }
 
@@ -45,21 +41,14 @@ public class CBCBlockCipher implements BlockCipher {
         return this.cipher.getBlockSize();
     }
 
-    public void reset()
-    {
+    public void reset() {
         System.arraycopy(IV, 0, cbcV, 0, IV.length);
         Arrays.fill(cbcNextV, (byte)0);
 
         cipher.reset();
     }
 
-    private int encryptBlock(
-            byte[]      in,
-            int         inOff,
-            byte[]      out,
-            int         outOff)
-            throws DataLengthException, IllegalStateException
-    {
+    private int encryptBlock( byte[] in, int inOff, byte[] out, int outOff) throws DataLengthException, IllegalStateException {
         if ((inOff + blockSize) > in.length)
         {
             throw new DataLengthException("input buffer too short");
@@ -80,13 +69,7 @@ public class CBCBlockCipher implements BlockCipher {
         return length;
     }
 
-    private int decryptBlock(
-            byte[]      in,
-            int         inOff,
-            byte[]      out,
-            int         outOff)
-            throws DataLengthException, IllegalStateException
-    {
+    private int decryptBlock( byte[] in, int inOff, byte[] out, int outOff) throws DataLengthException, IllegalStateException {
         if ((inOff + blockSize) > in.length)
         {
             throw new DataLengthException("input buffer too short");
@@ -103,13 +86,10 @@ public class CBCBlockCipher implements BlockCipher {
         {
             out[outOff + i] ^= cbcV[i];
         }
-
         byte[]  tmp;
-
         tmp = cbcV;
         cbcV = cbcNextV;
         cbcNextV = tmp;
-
         return length;
     }
 }

@@ -1,20 +1,44 @@
 package main;
 
 import java.nio.charset.StandardCharsets;
+ enum Mode {
+    NORMAL,
+    CBC,
+    ECB, 
+    OFB,
+    CFB;
 
+     public String toString() {
+        switch (this) {
+            case NORMAL:
+            case ECB:
+                return "ECB";
+            case CBC:
+                return "CBC";
+            case OFB:
+                return "OFB";
+            case CFB:
+                return "CFB";
+            default:
+                return "";
+        }
+     }
+}
 public class main {
 
-    public static BlockCipher getCipherName(String name) {
+    public static BlockCipher getCipherName(Mode name) {
         AESEngine engine = new AESEngine();
 
         switch (name) {
-            case "CBC":
+            case CBC:
                 return new CBCBlockCipher(engine);
-            case "ECB":
-            case "normal":
+            case ECB:
+            case NORMAL:
                 return engine;
-            case "":
-                return null;
+            case  OFB:
+                return new OFBBlockCipher(engine);
+            case CFB:
+                return new CFBBlockCipher(engine);
             default:
                 return null;
         }
@@ -28,13 +52,13 @@ public class main {
         byte[] key =  new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
         byte[] dat =  "pham hieu dep trai vo dich".getBytes(StandardCharsets.UTF_8);
         byte[] iv =  new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-        String mode = "CBC";
+        Mode mode = Mode.CBC;
         byte[] output = encryptMode(mode, dat, key, iv);
         decryptMode(mode, output, key, iv);
     }
 
-    byte[] encryptMode(String mode, byte[] dat, byte[] key, byte[] iv) {
-        System.out.println("===== Mã hóa "+mode+" =====");
+    byte[] encryptMode(Mode mode, byte[] dat, byte[] key, byte[] iv) {
+        System.out.println("===== Mã hóa "+mode.toString()+" =====");
         PKCS7Padding padding = new PKCS7Padding();
         BlockCipher block = getCipherName(mode);
         block.init(true, iv, key);
@@ -67,8 +91,8 @@ public class main {
         return out;
     }
 
-    byte[] decryptMode(String mode, byte[] dat, byte[] key, byte[] iv) {
-        System.out.println("===== Giải mã "+mode+" =====");
+    byte[] decryptMode(Mode mode, byte[] dat, byte[] key, byte[] iv) {
+        System.out.println("===== Giải mã "+mode.toString()+" =====");
         PKCS7Padding padding = new PKCS7Padding();
         BlockCipher block = getCipherName(mode);
         block.init(false, iv, key);
