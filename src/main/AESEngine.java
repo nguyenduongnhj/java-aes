@@ -1,6 +1,6 @@
 package main;
 
-public class AESEngine implements BlockCipher{
+public class AESEngine implements BlockCipher {
     // The S box
     private static final byte[] S = {
             (byte)99, (byte)124, (byte)119, (byte)123, (byte)242, (byte)107, (byte)111, (byte)197,
@@ -404,7 +404,7 @@ public class AESEngine implements BlockCipher{
     {
         WorkingKey = generateWorkingKey(key, forEncryption);
         this.forEncryption = forEncryption;
-        if (forEncryption)
+        if (forEncryption)//true
         {
             s = Arrays.clone(S);
         }

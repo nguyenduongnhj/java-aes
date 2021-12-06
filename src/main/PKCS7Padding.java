@@ -8,42 +8,27 @@ import java.security.SecureRandom;
  */
 public class PKCS7Padding
 {
-    /**
-     * Initialise the padder.
-     *
-     * @param random - a SecureRandom if available.
-     */
+
     public void init(SecureRandom random)
             throws IllegalArgumentException
     {
         // nothing to do.
     }
 
-    /**
-     * Return the name of the algorithm the padder implements.
-     *
-     * @return the name of the algorithm the padder implements.
-     */
     public String getPaddingName()
     {
         return "PKCS7";
     }
 
-    public int addPadding(
-            byte[]  in,
-            int     inOff)
-    {
+    public int addPadding(  byte[]  in, int inOff) {
         byte code = (byte)(in.length - inOff);
-
         while (inOff < in.length)
         {
             in[inOff] = code;
             inOff++;
         }
-
         return code;
     }
-
 
     public int padCount(byte[] in)
             throws InvalidCipherTextException

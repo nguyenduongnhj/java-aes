@@ -1,7 +1,7 @@
 package main;
 
 import java.nio.charset.StandardCharsets;
- enum Mode {
+ enum EncryptMode {
     NORMAL,
     CBC,
     ECB, 
@@ -24,9 +24,30 @@ import java.nio.charset.StandardCharsets;
         }
      }
 }
+
+enum EncryptKeySize {
+     AES128,
+    AES192,
+    AES256;
+
+    public String toString() {
+        switch (this) {
+            case AES128:
+                return "128";
+            case AES192:
+                return "192";
+            case AES256:
+                return "256";
+            default:
+                return "";
+        }
+    }
+
+    }
+
 public class main {
 
-    public static BlockCipher getCipherName(Mode name) {
+    public static BlockCipher getMode(EncryptMode name) {
         AESEngine engine = new AESEngine();
 
         switch (name) {
@@ -44,23 +65,40 @@ public class main {
         }
     }
 
+    public static byte[] getKey(EncryptKeySize mode) {
+        switch (mode) {
+            case AES128:
+                return new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+            case AES192:
+                return new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+            case AES256:
+                return new byte[] {1,2,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32};
+            default:
+                return null;
+        }
+    }
+
     public static void main(String[] args) {
         new main().run();
     }
+    EncryptKeySize keySize = EncryptKeySize.AES192;
+    EncryptMode mode = EncryptMode.CBC;
+
 
     void run() {
-        byte[] key =  new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+        byte[] key =  getKey(keySize);
         byte[] dat =  "pham hieu dep trai vo dich".getBytes(StandardCharsets.UTF_8);
         byte[] iv =  new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-        Mode mode = Mode.CBC;
         byte[] output = encryptMode(mode, dat, key, iv);
         decryptMode(mode, output, key, iv);
     }
 
-    byte[] encryptMode(Mode mode, byte[] dat, byte[] key, byte[] iv) {
-        System.out.println("===== Mã hóa "+mode.toString()+" =====");
+    byte[] encryptMode(EncryptMode mode, byte[] dat, byte[] key, byte[] iv) {
+        System.out.println("===== Mã hóa "+mode.toString()+ " " + keySize.toString() + " =====");
+
         PKCS7Padding padding = new PKCS7Padding();
-        BlockCipher block = getCipherName(mode);
+        BlockCipher block = getMode(mode);
+
         block.init(true, iv, key);
         int length = block.getBlockSize() - (dat.length % block.getBlockSize());
         int dataSize = length + dat.length;
@@ -74,6 +112,7 @@ public class main {
         for (int i = 0; i < count ; i++) {
             block.processBlock(paddingData,i * block.getBlockSize(),out,i * block.getBlockSize());
         }
+
         //ket thuc ma hoa
         long durationEncTime = System.nanoTime() - startTime;
         System.out.println("[-] Duration encrypt: " + durationEncTime +" nano second");
@@ -91,10 +130,10 @@ public class main {
         return out;
     }
 
-    byte[] decryptMode(Mode mode, byte[] dat, byte[] key, byte[] iv) {
-        System.out.println("===== Giải mã "+mode.toString()+" =====");
+    byte[] decryptMode(EncryptMode mode, byte[] dat, byte[] key, byte[] iv) {
+        System.out.println("===== Giải mã "+mode.toString()+ " " + keySize.toString() + " =====");
         PKCS7Padding padding = new PKCS7Padding();
-        BlockCipher block = getCipherName(mode);
+        BlockCipher block = getMode(mode);
         block.init(false, iv, key);
         int dataSize = dat.length ;
         byte [] decrypt =  new byte[dataSize];
@@ -106,7 +145,7 @@ public class main {
         }
 
 //        engine.processBlock(out,0,decrypt,0);
-        int paddingCount = padding.padCount(decrypt);
+        int paddingCount = padding.padCount(decrypt); //6
         byte[] decryptResult = new byte[decrypt.length - paddingCount];
         System.arraycopy(decrypt, 0, decryptResult, 0, decryptResult.length);
         long durationDecTime = System.nanoTime() - startTime;
@@ -115,7 +154,7 @@ public class main {
         for (int i = 0 ;i < decryptResult.length ;i ++) {
             System.out.format("%02x",decryptResult[i]);
         }
-        System.out.println("\n[.] String result: " +new String(decryptResult));
+        System.out.println("\n[.] String result: " + new String(decryptResult));
         return decryptResult;
     }
 
@@ -255,7 +294,5 @@ public class main {
 //        System.out.println("\n[.] String result: " +new String(decryptResult));
 //
 //    }
-
-
 
 }

@@ -4,7 +4,6 @@ public class CBCBlockCipher implements BlockCipher {
     private byte[]          IV;
     private byte[]          cbcV;
     private byte[]          cbcNextV;
-
     private int             blockSize;
     private AESEngine        cipher = null;
     private boolean         encrypting;
@@ -20,7 +19,6 @@ public class CBCBlockCipher implements BlockCipher {
     @Override
     public void init(boolean forEncryption, byte[] iv, byte[] key) throws IllegalArgumentException {
         boolean oldEncrypting = this.encrypting;
-
         this.encrypting = forEncryption;
         if (iv.length != blockSize)
         {
@@ -39,7 +37,7 @@ public class CBCBlockCipher implements BlockCipher {
     @Override
     public int getBlockSize() {
         return this.cipher.getBlockSize();
-    }
+    }//16
 
     public void reset() {
         System.arraycopy(IV, 0, cbcV, 0, IV.length);
